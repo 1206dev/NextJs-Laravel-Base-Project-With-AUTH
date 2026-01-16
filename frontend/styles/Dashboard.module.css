@@ -1,0 +1,163 @@
+.main {
+    min-height: 100vh;
+    padding: 2rem;
+    background: linear-gradient(180deg, var(--background) 0%, #0f0f17 100%);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.statCard {
+    text-align: center;
+    padding: 2rem;
+    animation: slideUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+.statCard:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.statCard:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.statCard:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.statCard:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.statIcon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.statValue {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.recentActivity {
+    padding: 2rem;
+    border-radius: var(--radius);
+    animation: slideUp 0.6s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.activityList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.activityItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--secondary);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.activityItem:hover {
+    background: var(--card);
+    transform: translateX(4px);
+}
+
+.activityIcon {
+    font-size: 1.25rem;
+}
+
+.activityAction {
+    flex: 1;
+    font-size: 0.875rem;
+}
+
+.activityTime {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

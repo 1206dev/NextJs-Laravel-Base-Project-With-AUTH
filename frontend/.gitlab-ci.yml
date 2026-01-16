@@ -1,0 +1,103 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE/frontend
+  NODE_VERSION: "20"
+
+.node_template: &node_template
+  image: node:${NODE_VERSION}-alpine
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+      - .next/cache/
+
+install_dependencies:
+  <<: *node_template
+  stage: build
+  script:
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+
+build:
+  <<: *node_template
+  stage: build
+  needs: ["install_dependencies"]
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 hour
+
+lint:
+  <<: *node_template
+  stage: test
+  needs: ["install_dependencies"]
+  script:
+    - npm run lint
+  allow_failure: true
+
+build_docker:
+  stage: deploy
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHA -t $DOCKER_IMAGE:latest .
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHA
+    - docker push $DOCKER_IMAGE:latest
+  only:
+    - main
+    - develop
+
+deploy_staging:
+  stage: deploy
+  image: alpine:latest
+  needs: ["build_docker"]
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$STAGING_SERVER "
+        docker pull $DOCKER_IMAGE:latest &&
+        docker-compose -f /opt/app/docker-compose.yml up -d frontend"
+  environment:
+    name: staging
+    url: https://staging.example.com
+  only:
+    - develop
+
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  needs: ["build_docker"]
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no $DEPLOY_USER@$PROD_SERVER "
+        docker pull $DOCKER_IMAGE:$CI_COMMIT_SHA &&
+        docker-compose -f /opt/app/docker-compose.yml up -d frontend"
+  environment:
+    name: production
+    url: https://example.com
+  only:
+    - main
+  when: manual
