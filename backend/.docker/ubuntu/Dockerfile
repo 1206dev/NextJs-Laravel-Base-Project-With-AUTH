@@ -49,10 +49,6 @@ RUN npm install -g pm2
 # Install common util
 ###########################################################################
 
-RUN apt-get install -y procps
-RUN apt-get install -y cron
-RUN apt-get install -y nano
-RUN apt-get install -y curl
-RUN apt-get install -y mysql-server
+RUN apt-get install -y procps cron nano
 
 ENTRYPOINT ["/startup.sh"]
