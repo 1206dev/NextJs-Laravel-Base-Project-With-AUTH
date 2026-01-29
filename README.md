@@ -2,6 +2,8 @@
 
 A modern fullstack starter kit using **Next.js 15 (Pages Router with SSR)** as frontend and **Laravel 11** as backend API. Includes JWT authentication, Docker support, and GitLab CI/CD.
 
+<img width="1270" height="908" alt="image" src="https://github.com/user-attachments/assets/9bfd4f3e-581c-4321-9daf-eb72e15b1b18" />
+
 ---
 
 ## Project Structure
