@@ -1,35 +1,38 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Ho_Chi_Minh
 
 RUN apt-get update -y
-## && apt-get upgrade -y
 
 ###########################################################################
 # Install php
 ###########################################################################
 
-RUN apt install -y software-properties-common
-RUN add-apt-repository ppa:ondrej/php
+RUN apt-get install -y software-properties-common
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y
+RUN add-apt-repository -y ppa:ondrej/php
+RUN apt-get update -y
 
-RUN apt-get update
-
-RUN apt install -y php8.2-fpm
-RUN apt install -y php8.2-common php8.2-mysql php8.2-xml php8.2-xmlrpc php8.2-curl php8.2-gd php8.2-imagick php8.2-cli php8.2-imap php8.2-mbstring php8.2-opcache php8.2-zip php8.2-intl php8.2-bcmath
+RUN apt-get install -y php8.5-fpm
+RUN apt-get install -y php8.5-common php8.5-mysql php8.5-xml php8.5-xmlrpc php8.5-curl php8.5-gd php8.5-imagick php8.5-cli php8.5-imap php8.5-mbstring php8.5-zip php8.5-intl php8.5-bcmath
 
 ###########################################################################
 # Install nginx
 ###########################################################################
 
-RUN apt install -y nginx
+RUN apt-get install -y nginx
 
 ###########################################################################
-# Install node & npm & nvm & pm2
+# Install node & npm & pm2
 ###########################################################################
-RUN apt install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_14.x  | bash -
-RUN apt-get -y install nodejs
-#RUN npm install -g npm
-#RUN npm install
-#RUN apt-get install -y npm && npm install -g npm
+RUN apt-get install -y curl ca-certificates gnupg
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+RUN apt-get update -y
+RUN apt-get install -y nodejs
 RUN npm install -g pm2
 
 # Update node version suitable to the project
@@ -47,9 +50,9 @@ RUN npm install -g pm2
 ###########################################################################
 
 RUN apt-get install -y procps
-RUN apt install -y cron
-RUN apt install nano
-RUN apt install curl
-RUN apt install -y mysql-server
+RUN apt-get install -y cron
+RUN apt-get install -y nano
+RUN apt-get install -y curl
+RUN apt-get install -y mysql-server
 
 ENTRYPOINT ["/startup.sh"]
